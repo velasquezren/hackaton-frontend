@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import {
@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
-  const [selectedRegionId, setSelectedRegionId] = useState<number>(1);
+  const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null);
 
   const { data: summary, isLoading: loadingSummary } = useQuery({
     queryKey: ["dashboard-summary"],
@@ -39,15 +39,22 @@ export default function Dashboard() {
     queryFn: fetchRegions,
   });
 
+  // Cuando las regiones cargan, seleccionar la primera automáticamente
+  useEffect(() => {
+    if (regions && regions.length > 0 && selectedRegionId === null) {
+      setSelectedRegionId(regions[0].id);
+    }
+  }, [regions, selectedRegionId]);
+
   const { data: predictionData, isLoading: loadingPredictions } = useQuery({
     queryKey: ["predictions", selectedRegionId],
-    queryFn: () => fetchRegionPredictions(selectedRegionId),
+    queryFn: () => fetchRegionPredictions(selectedRegionId!),
     enabled: !!selectedRegionId,
   });
 
   const { data: riskData, isLoading: loadingRisk } = useQuery({
     queryKey: ["risk-assessment", selectedRegionId],
-    queryFn: () => fetchRiskAssessment(selectedRegionId),
+    queryFn: () => fetchRiskAssessment(selectedRegionId!),
     enabled: !!selectedRegionId,
   });
 
@@ -74,6 +81,7 @@ export default function Dashboard() {
   }
 
   const activeRegion = regions.find((r) => r.id === selectedRegionId) || regions[0];
+  const currentRegionId = activeRegion.id;
   const predictions = predictionData?.predictions || [];
   const latestPrediction: ClimatePrediction | undefined = predictions.length > 0 ? predictions[0] : undefined;
 
@@ -149,7 +157,7 @@ export default function Dashboard() {
         <div className="bg-card border border-card-border p-5 rounded-xl">
           <label className="text-slate-500 text-xs font-medium block mb-2">Seleccionar región</label>
           <select
-            value={selectedRegionId}
+            value={selectedRegionId || ""}
             onChange={(e) => setSelectedRegionId(Number(e.target.value))}
             className="w-full bg-slate-950 text-white border border-card-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary/50 transition-all"
           >

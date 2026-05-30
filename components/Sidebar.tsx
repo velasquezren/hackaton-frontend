@@ -3,7 +3,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { useAlertCount } from "@/components/AlertsBanner";
+import { fetchRegions } from "@/lib/api";
 import {
   Sprout,
   LayoutDashboard,
@@ -17,6 +19,13 @@ export default function Sidebar() {
   const pathname = usePathname();
   const alertCount = useAlertCount();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const { data: regions } = useQuery({
+    queryKey: ["regions"],
+    queryFn: fetchRegions,
+  });
+
+  const firstRegionId = regions && regions.length > 0 ? regions[0].id : 1;
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -42,7 +51,7 @@ export default function Sidebar() {
         Mapa
       </Link>
 
-      <Link href="/region/1" className={linkClass("/region")} onClick={() => setMobileOpen(false)}>
+      <Link href={`/region/${firstRegionId}`} className={linkClass("/region")} onClick={() => setMobileOpen(false)}>
         <Sprout className={`w-4 h-4 ${isActive("/region") ? "text-emerald-400" : "text-slate-500"}`} />
         Regiones
       </Link>
