@@ -1,111 +1,99 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { MapContainer, TileLayer, Circle, Popup, Marker, useMap } from "react-leaflet";
-import L from "leaflet";
 import { useQuery, useQueries } from "@tanstack/react-query";
 import { fetchRegions, fetchRegionPredictions } from "@/lib/api";
-import { ShieldAlert, Sprout, Layers, Sun, CloudRain, Maximize2, Minimize2, Search, CheckCircle, Crosshair } from "lucide-react";
+import Link from "next/link";
+import { MapContainer, TileLayer, Marker, Popup, Circle, ZoomControl, useMap } from "react-leaflet";
+import L from "leaflet";
+import { Maximize2, Minimize2 } from "lucide-react";
 
-// Estilos de animación CSS inline para pulsos del mapa
-const pulseStyles = `
-  @keyframes markerPulse {
-    0% { transform: scale(0.9); opacity: 0.9; }
-    50% { transform: scale(1.4); opacity: 0.3; }
-    100% { transform: scale(0.9); opacity: 0.9; }
-  }
-  .marker-ping-orange {
-    animation: markerPulse 1.8s infinite ease-in-out;
-    background-color: rgba(249, 115, 22, 0.4);
-  }
-  .marker-ping-blue {
-    animation: markerPulse 1.8s infinite ease-in-out;
-    background-color: rgba(59, 130, 246, 0.4);
-  }
-`;
-
-// Controlador del mapa para animar vuelos de cámara (Fly-To)
-function MapController({ center, zoom }: { center: [number, number] | null; zoom: number }) {
-  const map = useMap();
-  useEffect(() => {
-    if (center) {
-      map.flyTo(center, zoom, {
-        animate: true,
-        duration: 1.5,
-      });
-    }
-  }, [center, zoom, map]);
-  return null;
+// Formateadores profesionales en lenguaje humano (sin emojis, minimalistas)
+function humanRisk(severity: number, anomaly: string): { label: string; color: string } {
+  if (anomaly === "NORMAL") return { label: "Estable", color: "text-emerald-400" };
+  if (severity >= 5) return { label: "Riesgo crítico", color: "text-red-400" };
+  if (severity >= 4) return { label: "Riesgo alto", color: "text-red-400" };
+  if (severity >= 3) return { label: "Riesgo moderado", color: "text-amber-400" };
+  return { label: "Riesgo bajo", color: "text-slate-400" };
 }
 
-// Crear marcador personalizado
-const createCustomMarker = (anomaly: string, isFocused: boolean) => {
-  const color = anomaly === "SEQUIA" ? "#f97316" : anomaly === "INUNDACION" ? "#3b82f6" : "#10b981";
-  const pingClass = anomaly === "SEQUIA" ? "marker-ping-orange" : anomaly === "INUNDACION" ? "marker-ping-blue" : "";
-  const size = isFocused ? "18px" : "12px";
-  const pingSize = isFocused ? "26px" : "20px";
+function humanDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString("es-BO", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
+// Creador de iconos minimalistas (pequeños puntos de color)
+function createCustomIcon(color: string, isSelected: boolean, isAlert: boolean) {
+  const size = isSelected ? 16 : 10;
+  const pulseHtml = isAlert && isSelected
+    ? `<div class="absolute rounded-full animate-ping opacity-30" style="width: 24px; height: 24px; background-color: ${color}; left: -4px; top: -4px;"></div>`
+    : "";
 
   return L.divIcon({
-    className: "custom-div-icon",
     html: `
-      <div style="position: relative; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
-        ${anomaly !== "NORMAL" ? `
-          <div class="${pingClass}" style="position: absolute; width: ${pingSize}; height: ${pingSize}; border-radius: 50%;"></div>
-        ` : ""}
-        <div style="
-          position: relative; 
-          width: ${size}; 
-          height: ${size}; 
-          background-color: ${color}; 
-          border: 2px solid #060a10; 
-          border-radius: 50%; 
-          box-shadow: 0 0 10px ${color};
-          transition: all 0.3s ease;
-        "></div>
+      <div class="relative flex items-center justify-center" style="width: ${size}px; height: ${size}px;">
+        ${pulseHtml}
+        <div class="rounded-full border border-slate-950 transition-all duration-300" 
+             style="width: ${size}px; height: ${size}px; background-color: ${color}; box-shadow: 0 0 8px ${color};"></div>
       </div>
     `,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -10]
+    className: "custom-leaflet-marker-wrapper",
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
   });
-};
+}
+
+// Componente para controlar vistas en el mapa
+interface MapControllerProps {
+  selectedRegionCoords: [number, number] | null;
+  resetTrigger: number;
+}
+
+function MapController({ selectedRegionCoords, resetTrigger }: MapControllerProps) {
+  const map = useMap();
+  const initialRef = useRef(true);
+
+  useEffect(() => {
+    if (initialRef.current) {
+      initialRef.current = false;
+      return;
+    }
+
+    if (selectedRegionCoords) {
+      map.flyTo(selectedRegionCoords, 8.5, {
+        animate: true,
+        duration: 1.2,
+      });
+    } else {
+      map.flyTo([-17.78, -63.18], 6.5, {
+        animate: true,
+        duration: 1.0,
+      });
+    }
+  }, [selectedRegionCoords, resetTrigger, map]);
+
+  return null;
+}
 
 export default function MapComponent() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [mapStyle, setMapStyle] = useState<"dark" | "satellite">("dark");
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [filterAnomaly, setFilterAnomaly] = useState<"ALL" | "SEQUIA" | "INUNDACION" | "NORMAL">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  const [focusRegion, setFocusRegion] = useState<{ coords: [number, number]; zoom: number } | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null);
+  const [resetTrigger, setResetTrigger] = useState(0);
 
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      const styleEl = document.createElement("style");
-      styleEl.innerHTML = pulseStyles;
-      document.head.appendChild(styleEl);
-      return () => {
-        document.head.removeChild(styleEl);
-      };
-    }
-  }, []);
-
-  // Escuchar cambios de pantalla completa del navegador
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-    };
-  }, []);
-
+  // Carga de regiones
   const { data: regions, isLoading: loadingRegions } = useQuery({
     queryKey: ["regions"],
     queryFn: fetchRegions,
   });
 
+  // Carga de predicciones en paralelo
   const regionQueries = useQueries({
     queries: (regions || []).map((region) => ({
       queryKey: ["predictions", region.id],
@@ -114,42 +102,21 @@ export default function MapComponent() {
     })),
   });
 
-  // Alternar pantalla completa
-  const toggleFullscreen = () => {
-    if (!mapContainerRef.current) return;
-    if (!document.fullscreenElement) {
-      mapContainerRef.current.requestFullscreen().catch((err) => {
-        console.error("Error al activar pantalla completa:", err);
-      });
-    } else {
-      document.exitFullscreen();
-    }
-  };
+  // Detección de fullscreen
+  useEffect(() => {
+    const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
 
-  const centerPosition: [number, number] = [-17.85, -61.50];
-  const defaultZoom = 6.2;
-
-  if (loadingRegions) {
-    return (
-      <div className="w-full h-full bg-slate-950 flex flex-col items-center justify-center gap-3 animate-pulse" style={{ minHeight: "600px" }}>
-        <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-        <p className="text-slate-500 text-xs">Cargando base de datos geoespacial...</p>
-      </div>
-    );
-  }
-
-  // Mapear regiones con sus predicciones asociadas
+  // Formatear regiones con sus predicciones
   const mapRegions = (regions || []).map((region, index) => {
     const predictionsQuery = regionQueries[index];
     const predictions = predictionsQuery?.data?.predictions || [];
     const latest = predictions.length > 0 ? predictions[0] : null;
     const anomaly = latest ? latest.anomaly_type : "NORMAL";
     const severity = latest ? latest.severity_level : 1;
-
-    const coords: [number, number] = [
-      region.latitude || -17.78,
-      region.longitude || -63.18,
-    ];
+    const coords: [number, number] = [region.latitude || -17.78, region.longitude || -63.18];
 
     return {
       id: region.id,
@@ -160,342 +127,302 @@ export default function MapComponent() {
       description: region.description,
       latestPred: latest,
       main_crops: region.main_crops,
-      area_hectares: region.area_hectares
+      area_hectares: region.area_hectares,
     };
   });
 
-  // Filtrar regiones según los controles interactivos de usuario
-  const filteredRegions = mapRegions.filter((region) => {
-    const matchesFilter = filterAnomaly === "ALL" || region.anomaly === filterAnomaly;
-    const matchesSearch = region.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (region.main_crops && region.main_crops.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesFilter && matchesSearch;
-  });
+  // Filtrado de regiones
+  const filteredRegions = mapRegions.filter(
+    (r) =>
+      r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (r.main_crops && r.main_crops.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
-  // Estadísticas del mapa en tiempo real
-  const totalMonitoredHectares = mapRegions.reduce((acc, curr) => acc + (curr.area_hectares || 0), 0);
-  const regionsInAlert = mapRegions.filter(r => r.anomaly !== "NORMAL").length;
-  const maxSeverityActive = mapRegions.reduce((max, curr) => curr.severity > max ? curr.severity : max, 0);
+  const regionsInAlert = mapRegions.filter((r) => r.anomaly !== "NORMAL").length;
 
-  const handleFlyToRegion = (coords: [number, number], id: number) => {
-    setFocusRegion({ coords, zoom: 8.5 });
+  const selectedRegion = mapRegions.find((r) => r.id === selectedRegionId) || null;
+
+  const handleFlyToRegion = (id: number) => {
     setSelectedRegionId(id);
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
   };
 
   const handleResetMap = () => {
-    setFocusRegion({ coords: centerPosition, zoom: defaultZoom });
     setSelectedRegionId(null);
+    setResetTrigger((prev) => prev + 1);
+  };
+
+  const toggleFullscreen = () => {
+    if (!mapContainerRef.current) return;
+    if (!document.fullscreenElement) {
+      mapContainerRef.current.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen();
+    }
   };
 
   return (
-    <div 
-      ref={mapContainerRef} 
-      className="w-full h-full relative border border-card-border rounded-2xl overflow-hidden flex flex-col md:flex-row bg-slate-950" 
-      style={{ minHeight: "600px" }}
+    <div
+      ref={mapContainerRef}
+      className="absolute inset-0 bg-[#020305] overflow-hidden flex flex-col md:flex-row"
     >
-      
-      {/* PANEL LATERAL DE NAVEGACIÓN Y FILTROS */}
-      <div className="w-full md:w-80 bg-slate-950 border-b md:border-b-0 md:border-r border-card-border p-4 flex flex-col justify-between z-[1000] relative">
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-white text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-              <Crosshair className="w-4 h-4 text-primary" />
-              Consola GIS AgriTech
-            </h3>
-            <span className="text-[10px] text-slate-500 block">Monitoreo Satelital de Santa Cruz</span>
-          </div>
+      {/* Indicador de carga superpuesto */}
+      {loadingRegions && (
+        <div className="absolute inset-0 bg-background/85 backdrop-blur-sm z-[1010] flex flex-col items-center justify-center gap-3">
+          <div className="w-5 h-5 border border-primary/20 border-t-primary rounded-full animate-spin" />
+          <p className="text-[10px] font-mono tracking-widest uppercase text-slate-500">Cargando...</p>
+        </div>
+      )}
 
-          {/* Buscador */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Buscar región o cultivo..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-900 border border-card-border rounded-lg pl-8 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-primary/50 transition-all"
-            />
-            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
-          </div>
+      {/* ─── PANEL LATERAL DESLIZANTE/RETRAÍBLE ─── */}
+      <div
+        className={`
+          absolute top-4 bottom-4 left-4 z-[1000] w-76 max-w-[calc(100vw-2rem)]
+          bg-card/95 backdrop-blur-xl border border-white/[0.03] rounded-lg shadow-2xl
+          flex flex-col p-5 transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-[calc(100%+16px)]"}
+        `}
+      >
+        {/* Botón pestaña deslizante acoplado al borde derecho */}
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="absolute -right-8 top-1/2 -translate-y-1/2 w-8 h-28 bg-card/95 border border-l-0 border-white/[0.03] rounded-r flex items-center justify-center text-slate-500 hover:text-white transition-colors cursor-pointer shadow-lg select-none"
+          title={isSidebarOpen ? "Ocultar panel" : "Mostrar panel"}
+        >
+          <span className="text-[7.5px] font-mono tracking-[0.2em] uppercase [writing-mode:vertical-lr] text-slate-400 hover:text-white transition-colors">
+            {isSidebarOpen ? "CERRAR" : "REGIONES"}
+          </span>
+        </button>
 
-          {/* Filtros de Peligro Climático */}
-          <div className="space-y-1.5">
-            <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Filtro de Peligro</span>
-            <div className="grid grid-cols-2 gap-1.5">
-              <button
-                onClick={() => setFilterAnomaly("ALL")}
-                className={`py-1.5 rounded text-[10px] font-bold border transition-all ${
-                  filterAnomaly === "ALL" 
-                    ? "bg-slate-800 text-white border-slate-700" 
-                    : "bg-slate-900/40 text-slate-400 border-card-border hover:bg-slate-900"
-                }`}
-              >
-                Todos
-              </button>
-              <button
-                onClick={() => setFilterAnomaly("SEQUIA")}
-                className={`py-1.5 rounded text-[10px] font-bold border transition-all flex items-center justify-center gap-1 ${
-                  filterAnomaly === "SEQUIA" 
-                    ? "bg-orange-500/10 text-orange-400 border-orange-500/30" 
-                    : "bg-slate-900/40 text-slate-400 border-card-border hover:bg-slate-900"
-                }`}
-              >
-                <Sun className="w-3 h-3 text-orange-400" />
-                Sequía
-              </button>
-              <button
-                onClick={() => setFilterAnomaly("INUNDACION")}
-                className={`py-1.5 rounded text-[10px] font-bold border transition-all flex items-center justify-center gap-1 ${
-                  filterAnomaly === "INUNDACION" 
-                    ? "bg-blue-500/10 text-blue-400 border-blue-500/30" 
-                    : "bg-slate-900/40 text-slate-400 border-card-border hover:bg-slate-900"
-                }`}
-              >
-                <CloudRain className="w-3 h-3 text-blue-400" />
-                Inundación
-              </button>
-              <button
-                onClick={() => setFilterAnomaly("NORMAL")}
-                className={`py-1.5 rounded text-[10px] font-bold border transition-all flex items-center justify-center gap-1 ${
-                  filterAnomaly === "NORMAL" 
-                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" 
-                    : "bg-slate-900/40 text-slate-400 border-card-border hover:bg-slate-900"
-                }`}
-              >
-                <CheckCircle className="w-3 h-3 text-emerald-400" />
-                Normal
-              </button>
-            </div>
-          </div>
-
-          {/* Listado de Regiones */}
-          <div className="space-y-1.5">
-            <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Regiones en Pantalla ({filteredRegions.length})</span>
-            <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-              {filteredRegions.length === 0 ? (
-                <p className="text-slate-600 text-[10px] text-center py-4">No se hallaron coincidencias.</p>
-              ) : (
-                filteredRegions.map((r) => {
-                  const borderCol = r.anomaly === "SEQUIA" ? "border-orange-500/20 hover:border-orange-500/40" 
-                                  : r.anomaly === "INUNDACION" ? "border-blue-500/20 hover:border-blue-500/40" 
-                                  : "border-card-border hover:border-primary/30";
-                  
-                  return (
-                    <button
-                      key={r.id}
-                      onClick={() => handleFlyToRegion(r.coords, r.id)}
-                      className={`w-full text-left p-2.5 rounded-lg border bg-slate-900/40 hover:bg-slate-900 transition-all flex flex-col gap-1 ${borderCol} ${
-                        selectedRegionId === r.id ? "bg-slate-900 border-primary/50" : ""
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-white font-bold">{r.name}</span>
-                        <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded ${
-                          r.anomaly === "SEQUIA" ? "bg-orange-500/10 text-orange-400" 
-                          : r.anomaly === "INUNDACION" ? "bg-blue-500/10 text-blue-400" 
-                          : "bg-emerald-500/10 text-emerald-400"
-                        }`}>
-                          {r.anomaly}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center text-[9px] text-slate-500">
-                        <span>{r.main_crops || "Cultivos variados"}</span>
-                        {r.anomaly !== "NORMAL" && (
-                          <span className="text-red-400 font-bold">Sev. {r.severity}</span>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })
-              )}
-            </div>
-          </div>
+        {/* Cabecera */}
+        <div className="flex justify-between items-center mb-6">
+          <span className="text-[9px] font-mono tracking-[0.25em] text-slate-500 uppercase">
+            REGIONES
+          </span>
         </div>
 
-        {/* Resumen Estadístico Rápido */}
-        <div className="border-t border-card-border pt-4 mt-4 space-y-2 hidden md:block">
-          <div className="flex justify-between text-[10px] text-slate-500">
-            <span>Total Superficie:</span>
-            <strong className="text-slate-300">{totalMonitoredHectares.toLocaleString()} ha</strong>
-          </div>
-          <div className="flex justify-between text-[10px] text-slate-500">
-            <span>Zonas en Alerta:</span>
-            <strong className="text-orange-400">{regionsInAlert}</strong>
-          </div>
-          <div className="flex justify-between text-[10px] text-slate-500">
-            <span>Gravedad Máxima:</span>
-            <strong className="text-red-400">{maxSeverityActive}/5</strong>
-          </div>
-          <button 
-            onClick={handleResetMap}
-            className="w-full mt-2 bg-slate-900 border border-card-border hover:bg-slate-800 text-slate-300 py-1.5 rounded text-[10px] font-medium transition-all"
+        {/* Buscador minimalista sin fondo */}
+        <div className="relative mb-5 border-b border-white/[0.05]">
+          <input
+            type="text"
+            placeholder="Buscar..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-transparent py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none transition-all"
+          />
+        </div>
+
+        {/* Resumen simple */}
+        <div className="text-[10px] font-mono tracking-wider mb-5 flex items-center gap-2 text-slate-400">
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${
+              regionsInAlert > 0 ? "bg-amber-500 animate-pulse" : "bg-primary"
+            }`}
+          />
+          <span>
+            {regionsInAlert > 0
+              ? `${regionsInAlert} REGIONES EN OBSERVACIÓN`
+              : "CONDICIONES ESTABLES"}
+          </span>
+        </div>
+
+        {/* Lista de regiones */}
+        <div className="flex-1 space-y-1 overflow-y-auto pr-1">
+          {filteredRegions.length === 0 ? (
+            <p className="text-slate-600 text-[10px] font-mono text-center py-4">Sin resultados</p>
+          ) : (
+            filteredRegions.map((r) => {
+              const risk = humanRisk(r.severity, r.anomaly);
+              const isSelected = selectedRegionId === r.id;
+              const dotColor =
+                r.anomaly === "SEQUIA"
+                  ? "bg-drought"
+                  : r.anomaly === "INUNDACION"
+                  ? "bg-flood"
+                  : "bg-primary/40";
+
+              return (
+                <button
+                  key={r.id}
+                  onClick={() => handleFlyToRegion(r.id)}
+                  className={`w-full text-left py-2 px-3 rounded flex items-center justify-between border border-transparent hover:border-white/[0.02] hover:bg-white/[0.01] transition-all duration-300 hover:translate-x-1 cursor-pointer ${
+                    isSelected ? "bg-white/[0.02] border-white/[0.04]" : ""
+                  }`}
+                >
+                  <div className="space-y-0.5">
+                    <p className="text-xs text-slate-300 font-medium">{r.name}</p>
+                    <p className="text-[10px] text-slate-500 font-light">{risk.label}</p>
+                  </div>
+                  <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+                </button>
+              );
+            })
+          )}
+        </div>
+
+        {/* Botón restaurar */}
+        <button
+          onClick={handleResetMap}
+          className="mt-6 w-full border border-white/[0.05] hover:bg-white/[0.01] text-slate-500 hover:text-slate-300 py-2 rounded text-[9px] font-mono tracking-widest uppercase transition-all cursor-pointer"
+        >
+          [ Restablecer Vista ]
+        </button>
+      </div>
+
+      {/* ─── CONTROLES DE CAPA / ESTILO ─── */}
+      <div className="absolute top-4 right-4 z-[1000] flex gap-2">
+        <div className="flex bg-card/90 backdrop-blur-md border border-white/[0.03] p-1 rounded">
+          <button
+            onClick={() => setMapStyle("dark")}
+            className={`px-3 py-1.5 rounded text-[9px] font-mono tracking-wider uppercase transition-all cursor-pointer ${
+              mapStyle === "dark" ? "bg-white text-black font-semibold" : "text-slate-500 hover:text-white"
+            }`}
           >
-            Restaurar Vista Global
+            Oscuro
           </button>
+          <button
+            onClick={() => setMapStyle("satellite")}
+            className={`px-3 py-1.5 rounded text-[9px] font-mono tracking-wider uppercase transition-all cursor-pointer ${
+              mapStyle === "satellite" ? "bg-white text-black font-semibold" : "text-slate-500 hover:text-white"
+            }`}
+          >
+            Satélite
+          </button>
+        </div>
+
+        <button
+          onClick={toggleFullscreen}
+          className="bg-card/90 hover:bg-card border border-white/[0.03] px-3.5 py-2 rounded text-slate-400 hover:text-white text-[9px] font-mono tracking-wider uppercase transition-all cursor-pointer flex items-center gap-1.5"
+        >
+          {isFullscreen ? (
+            <Minimize2 className="w-3.5 h-3.5" />
+          ) : (
+            <Maximize2 className="w-3.5 h-3.5" />
+          )}
+          <span>Pantalla</span>
+        </button>
+      </div>
+
+      {/* ─── LEYENDA FLOTANTE ─── */}
+      <div className="absolute bottom-4 right-4 bg-card/90 backdrop-blur-md border border-white/[0.03] p-4 rounded z-[1000] min-w-[150px] hidden sm:block">
+        <span className="text-slate-500 text-[9px] font-mono tracking-widest uppercase block mb-3 border-b border-white/[0.04] pb-1">
+          Indicadores
+        </span>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-[10px] font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#f97316]" />
+            <span className="text-slate-400">Sequía</span>
+          </div>
+          <div className="flex items-center gap-2 text-[10px] font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]" />
+            <span className="text-slate-400">Inundación</span>
+          </div>
+          <div className="flex items-center gap-2 text-[10px] font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
+            <span className="text-slate-400">Estable</span>
+          </div>
         </div>
       </div>
 
-      {/* ÁREA DEL MAPA */}
-      <div className="flex-1 h-full relative">
-        
-        {/* Controles Flotantes Superpuestos sobre el Mapa */}
-        <div className="absolute top-4 right-4 z-[1000] flex gap-2">
-          {/* Selector de capas */}
-          <div className="flex bg-slate-950/90 backdrop-blur-md border border-slate-800 p-1 rounded-xl shadow-xl">
-            <button
-              onClick={() => setMapStyle("dark")}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                mapStyle === "dark" 
-                  ? "bg-primary text-slate-950" 
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              Oscuro
-            </button>
-            <button
-              onClick={() => setMapStyle("satellite")}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                mapStyle === "satellite" 
-                  ? "bg-primary text-slate-950" 
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              Satelital
-            </button>
-          </div>
+      {/* ─── CONTENEDOR DEL MAPA REAL (Leaflet) ─── */}
+      <div className="flex-1 h-full w-full relative z-10">
+        <MapContainer
+          center={[-17.78, -63.18]}
+          zoom={6.5}
+          scrollWheelZoom={true}
+          className="absolute inset-0 w-full h-full"
+          zoomControl={false}
+        >
+          <TileLayer
+            attribution={
+              mapStyle === "dark"
+                ? '&copy; CARTO &copy; OpenStreetMap contributors'
+                : 'Tiles &copy; Esri &mdash; Source: Esri'
+            }
+            url={
+              mapStyle === "dark"
+                ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            }
+          />
 
-          {/* Botón Pantalla Completa */}
-          <button
-            onClick={toggleFullscreen}
-            className="bg-slate-950/90 hover:bg-slate-900 border border-slate-800 p-2 rounded-xl text-slate-400 hover:text-white shadow-xl transition-all"
-            title="Pantalla Completa"
-          >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-          </button>
-        </div>
+          {/* Controlador de Zoom */}
+          <ZoomControl position="bottomright" />
 
-        {/* Leyenda del Mapa */}
-        <div className="absolute bottom-4 right-4 bg-slate-950/90 backdrop-blur-md border border-slate-800 p-3.5 rounded-xl z-[1000] space-y-2.5 shadow-2xl">
-          <h4 className="text-white text-[9px] font-bold uppercase tracking-wider mb-0.5 border-b border-slate-800 pb-1.5">
-            Leyenda de Riesgo
-          </h4>
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-[11px]">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#f97316]" style={{ boxShadow: "0 0 6px #f97316" }}></span>
-              <span className="text-slate-300">Déficit Hídrico (Sequía)</span>
-            </div>
-            <div className="flex items-center gap-2 text-[11px]">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" style={{ boxShadow: "0 0 6px #3b82f6" }}></span>
-              <span className="text-slate-300">Exceso Pluvial (Inundación)</span>
-            </div>
-            <div className="flex items-center gap-2 text-[11px]">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#10b981]" style={{ boxShadow: "0 0 6px #10b981" }}></span>
-              <span className="text-slate-300">Condición Normal</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Mapa Leaflet */}
-        <MapContainer center={centerPosition} zoom={defaultZoom} scrollWheelZoom={true} className="h-full w-full">
-          
-          {/* Habilita Fly-To dinámicos */}
-          {focusRegion && <MapController center={focusRegion.coords} zoom={focusRegion.zoom} />}
-
-          {mapStyle === "dark" ? (
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            />
-          ) : (
-            <TileLayer
-              attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            />
-          )}
-
-          {filteredRegions.map((region) => {
-            const color = region.anomaly === "SEQUIA" ? "#f97316" : region.anomaly === "INUNDACION" ? "#3b82f6" : "#10b981";
-            const radius = region.severity * 16000;
+          {/* Marcadores y Círculos */}
+          {mapRegions.map((region) => {
             const isSelected = selectedRegionId === region.id;
+            const color =
+              region.anomaly === "SEQUIA"
+                ? "#f97316"
+                : region.anomaly === "INUNDACION"
+                ? "#3b82f6"
+                : "#10b981";
+
+            const risk = humanRisk(region.severity, region.anomaly);
 
             return (
               <React.Fragment key={region.id}>
-                <Circle
-                  center={region.coords}
-                  radius={radius}
-                  pathOptions={{
-                    color,
-                    fillColor: color,
-                    fillOpacity: isSelected ? 0.35 : mapStyle === "satellite" ? 0.20 : 0.08,
-                    weight: isSelected ? 2 : 1,
-                    dashArray: region.anomaly !== "NORMAL" ? "4, 6" : undefined
-                  }}
-                />
+                {region.anomaly !== "NORMAL" && (
+                  <Circle
+                    center={region.coords}
+                    radius={region.severity * 15000}
+                    pathOptions={{
+                      color: color,
+                      fillColor: color,
+                      fillOpacity: isSelected ? 0.2 : 0.05,
+                      weight: isSelected ? 1 : 0.5,
+                      dashArray: isSelected ? "3, 3" : undefined,
+                    }}
+                  />
+                )}
+
                 <Marker
                   position={region.coords}
-                  icon={createCustomMarker(region.anomaly, isSelected)}
+                  icon={createCustomIcon(color, isSelected, region.anomaly !== "NORMAL")}
                   eventHandlers={{
-                    click: () => setSelectedRegionId(region.id)
+                    click: () => setSelectedRegionId(region.id),
                   }}
                 >
                   <Popup>
-                    <div className="p-2 max-w-[280px] font-sans">
-                      <h5 className="font-bold text-sm text-slate-100 mb-1">{region.name}</h5>
-                      
-                      <div className="flex items-center gap-1.5 mb-2.5">
-                        <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded border ${
-                          region.anomaly === "SEQUIA" 
-                            ? "bg-orange-500/10 text-orange-400 border-orange-500/20" 
-                            : region.anomaly === "INUNDACION" 
-                            ? "bg-blue-500/10 text-blue-400 border-blue-500/20" 
-                            : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                        }`}>
-                          {region.anomaly === "SEQUIA" ? "Sequía Activa" : region.anomaly === "INUNDACION" ? "Inundación Activa" : "Estado Estable"}
-                        </span>
-                        {region.anomaly !== "NORMAL" && (
-                          <span className="text-red-400 text-[10px] font-bold">
-                            Severidad: {region.severity}/5
-                          </span>
-                        )}
+                    <div className="space-y-3 min-w-[220px] text-slate-200 font-sans p-1">
+                      <div>
+                        <h5 className="font-bold text-xs text-white uppercase tracking-wider">{region.name}</h5>
+                        <p className="text-[10px] font-mono mt-0.5" style={{ color: color }}>
+                          {risk.label}
+                        </p>
                       </div>
-
-                      <div className="space-y-1 mb-2.5 text-[10px] text-slate-400">
-                        {region.main_crops && (
-                          <p className="flex items-center gap-1.5">
-                            <Sprout className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                            <span>Cultivos: <strong className="text-slate-300 font-medium">{region.main_crops}</strong></span>
-                          </p>
-                        )}
-                        {region.area_hectares && (
-                          <p>
-                            Superficie: <strong className="text-slate-300 font-medium">{region.area_hectares.toLocaleString()} ha</strong>
-                          </p>
-                        )}
-                      </div>
-
-                      {region.latestPred && (
-                        <div className="bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 text-[10px] space-y-1">
+                      <p className="text-slate-400 text-[10px] leading-relaxed font-light">{region.description || ""}</p>
+                      {region.latestPred ? (
+                        <div className="bg-white/[0.02] border border-white/[0.03] rounded p-2 space-y-1 text-[9px] font-mono">
                           <div className="flex justify-between text-slate-500">
-                            <span>Objetivo Predicción:</span>
-                            <strong className="text-slate-200">
-                              {new Date(region.latestPred.target_date).toLocaleDateString("es-BO", { month: "long", year: "numeric" })}
-                            </strong>
+                            <span>PROYECCIÓN:</span>
+                            <span className="text-white">{humanDate(region.latestPred.target_date).toUpperCase()}</span>
                           </div>
                           <div className="flex justify-between text-slate-500">
-                            <span>Confianza del Modelo:</span>
-                            <strong className="text-emerald-400">
-                              {Math.round(region.latestPred.confidence_score * 100)}%
-                            </strong>
+                            <span>CONFIANZA:</span>
+                            <span className="text-emerald-400">{Math.round(region.latestPred.confidence_score * 100)}%</span>
                           </div>
                         </div>
-                      )}
+                      ) : null}
+                      <div className="pt-1">
+                        <Link
+                          href={`/region/${region.id}`}
+                          className="block text-center border border-white/[0.1] hover:border-white text-white font-mono text-[9px] tracking-wider uppercase py-2 rounded transition-all"
+                        >
+                          [ Detalles ]
+                        </Link>
+                      </div>
                     </div>
                   </Popup>
                 </Marker>
               </React.Fragment>
             );
           })}
+
+          <MapController selectedRegionCoords={selectedRegion?.coords || null} resetTrigger={resetTrigger} />
         </MapContainer>
       </div>
     </div>

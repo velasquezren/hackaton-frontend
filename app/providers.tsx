@@ -13,8 +13,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            // El estado de los datos se considera fresco por 1 minuto
-            staleTime: 60 * 1000,
+            // El estado de los datos climáticos se considera fresco por 10 minutos
+            staleTime: 10 * 60 * 1000,
+            gcTime: 15 * 60 * 1000,
             refetchOnWindowFocus: false, // Evita refetch molesto al cambiar de pestaña
             retry: 1, // Reintento único en caso de error de red
           },

@@ -1,22 +1,22 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-/* AgriTech Design Tokens */
+/* Premium Ultra-Minimalist Design Tokens */
 :root {
-  --background: #060a10;
-  --foreground: #f1f5f9;
+  --background: #020305;
+  --foreground: #f8fafc;
 
-  --card: #0c1220;
-  --card-border: rgba(255, 255, 255, 0.06);
+  --card: #08090d;
+  --card-border: rgba(255, 255, 255, 0.03);
 
   --primary: #10b981;
-  --primary-glow: rgba(16, 185, 129, 0.12);
+  --primary-glow: rgba(16, 185, 129, 0.06);
 
   --drought: #f97316;
-  --drought-glow: rgba(249, 115, 22, 0.12);
+  --drought-glow: rgba(249, 115, 22, 0.06);
 
   --flood: #3b82f6;
-  --flood-glow: rgba(59, 130, 246, 0.12);
+  --flood-glow: rgba(59, 130, 246, 0.06);
 
   --accent: #8b5cf6;
 
@@ -43,58 +43,83 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter);
   overflow-x: hidden;
+  letter-spacing: -0.01em;
 }
 
 /* Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: rgba(255, 255, 255, 0.1);
 }
 
-/* Leaflet dark theme */
+/* Leaflet dark theme overrides */
 .leaflet-container {
   width: 100%;
   height: 100%;
-  background-color: #0c1220 !important;
-  border-radius: 12px;
+  background-color: #020305 !important;
+  font-family: var(--font-inter), sans-serif;
 }
 
 .leaflet-bar {
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
 }
 
 .leaflet-bar a {
-  background-color: #0f172a !important;
+  background-color: rgba(8, 9, 13, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
   color: #94a3b8 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+  transition: all 0.15s ease !important;
+}
+
+.leaflet-bar a:last-child {
+  border-bottom: none !important;
 }
 
 .leaflet-bar a:hover {
-  background-color: #1e293b !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
   color: #ffffff !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background-color: #0c1220 !important;
+  background: rgba(8, 9, 13, 0.98) !important;
+  backdrop-filter: blur(16px) !important;
   color: #f1f5f9 !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 10px !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.7) !important;
+  padding: 4px !important;
 }
 
 .leaflet-popup-tip {
-  background-color: #0c1220 !important;
+  background-color: rgba(8, 9, 13, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(2, 3, 5, 0.85) !important;
+  color: #475569 !important;
+  backdrop-filter: blur(4px) !important;
+  border-top-left-radius: 6px !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.03) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.03) !important;
+}
+
+.leaflet-control-attribution a {
+  color: #10b981 !important;
 }
 
 /* Utility: line clamp */

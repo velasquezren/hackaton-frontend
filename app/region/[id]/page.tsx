@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import {
   fetchRegions,
@@ -13,49 +14,31 @@ import {
 import PredictionChart from "@/components/PredictionChart";
 import VertexDetails from "@/components/VertexDetails";
 import RiskAssessmentPanel from "@/components/RiskAssessmentPanel";
-import {
-  ArrowLeft,
-  MapPin,
-  ShieldAlert,
-  Sun,
-  CloudRain,
-  CheckCircle,
-  Calendar,
-  TrendingUp,
-  Sprout,
-} from "lucide-react";
 
-/**
- * Skeleton loader for the page sections
- */
 function SectionSkeleton({ height = "h-64" }: { height?: string }) {
   return (
-    <div className={`bg-card border border-card-border rounded-2xl ${height} animate-pulse`}>
+    <div className={`bg-card border border-card-border rounded ${height} animate-pulse`}>
       <div className="p-6 space-y-3">
-        <div className="h-4 bg-slate-800 rounded w-1/3" />
-        <div className="h-3 bg-slate-800/60 rounded w-2/3" />
-        <div className="h-32 bg-slate-800/30 rounded-xl mt-4" />
+        <div className="h-3 bg-slate-800/80 rounded w-1/4" />
+        <div className="h-2 bg-slate-800/40 rounded w-1/2" />
+        <div className="h-32 bg-slate-800/10 rounded mt-4" />
       </div>
     </div>
   );
 }
 
-/**
- * Página de detalle de una región específica con predicciones completas,
- * timeline, evaluación de riesgo y detalles de Vertex AI.
- */
 export default function RegionDetailPage() {
   const params = useParams();
   const router = useRouter();
   const regionId = Number(params.id);
 
-  // Fetch all regions to validate current ID and provide a selector
-  const { data: regions, isLoading: loadingRegionsList } = useQuery({
+  // Obtener lista de regiones
+  const { data: regions } = useQuery({
     queryKey: ["regions"],
     queryFn: fetchRegions,
   });
 
-  // Auto-redirect if the region ID is invalid or outdated
+  // Redirección si la región no existe
   useEffect(() => {
     if (regions && regions.length > 0) {
       const isValid = regions.some((r) => r.id === regionId);
@@ -65,7 +48,7 @@ export default function RegionDetailPage() {
     }
   }, [regions, regionId, router]);
 
-  // Fetch predictions
+  // Carga de predicciones
   const {
     data: predictionData,
     isLoading: loadingPredictions,
@@ -76,7 +59,7 @@ export default function RegionDetailPage() {
     enabled: !!regionId,
   });
 
-  // Fetch timeline
+  // Carga del historial / línea de tiempo
   const {
     data: timelineData,
     isLoading: loadingTimeline,
@@ -86,7 +69,7 @@ export default function RegionDetailPage() {
     enabled: !!regionId,
   });
 
-  // Fetch risk assessment
+  // Carga de la evaluación de riesgo
   const {
     data: riskData,
     isLoading: loadingRisk,
@@ -103,209 +86,192 @@ export default function RegionDetailPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Back button + Region header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            className="w-10 h-10 rounded-xl bg-card border border-card-border flex items-center justify-center hover:bg-white/5 transition-all hover:border-primary/30"
-          >
-            <ArrowLeft className="w-4 h-4 text-slate-400" />
-          </Link>
-          <div>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500">
-              Detalle de Región
+    <div className="min-h-screen bg-background text-foreground pb-20">
+      {/* ─── CABECERA ─── */}
+      <header className="h-16 border-b border-white/[0.02] bg-background sticky top-0 z-40 mb-8 flex items-center justify-between px-6">
+        <Link
+          href="/mapa"
+          prefetch={true}
+          className="group flex items-center gap-1.5 text-slate-500 hover:text-white transition-colors text-[10px] font-mono tracking-wider uppercase"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+          <span>Volver al mapa</span>
+        </Link>
+        <span className="text-white text-xs font-light uppercase tracking-[0.25em]">
+          AgroClima
+        </span>
+      </header>
+
+      {/* ─── CONTENEDOR PRINCIPAL ─── */}
+      <main className="max-w-5xl mx-auto px-6 space-y-12">
+        {/* Cabecera del Reporte */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.03] pb-6">
+          <div className="space-y-1">
+            <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block">
+              DIAGNÓSTICO REGIONAL
             </span>
             {region ? (
-              <h2 className="text-white text-xl font-bold flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary" />
+              <h1 className="text-white text-xl font-light tracking-tight">
                 {region.name}
-              </h2>
+              </h1>
             ) : (
-              <div className="h-6 w-48 bg-slate-800 rounded animate-pulse mt-1" />
+              <div className="h-6 w-48 bg-slate-800 rounded animate-pulse" />
             )}
           </div>
-        </div>
 
-        {/* Region selector dropdown */}
-        {regions && regions.length > 0 && (
-          <div className="flex items-center gap-2">
-            <span className="text-slate-500 text-xs font-medium">Cambiar región:</span>
-            <select
-              value={regionId || ""}
-              onChange={handleRegionChange}
-              className="bg-slate-950 text-white border border-card-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary/50 transition-all"
-            >
-              {regions.map((reg) => (
-                <option key={reg.id} value={reg.id}>
-                  {reg.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
-
-      {/* Region description */}
-      {region?.description && (
-        <div className="bg-card border border-card-border p-5 rounded-2xl">
-          <p className="text-slate-400 text-sm leading-relaxed">
-            {region.description}
-          </p>
-          <div className="flex flex-wrap gap-4 text-xs text-slate-500 mt-3 border-t border-card-border/50 pt-3">
-            <div>
-              <span>ID de Monitoreo:</span>
-              <span className="text-slate-400 font-mono font-bold ml-1">
-                #SCZ-00{region.id}
-              </span>
+          {/* Selector de Zonas */}
+          {regions && regions.length > 0 && (
+            <div className="flex items-center gap-2 border border-white/[0.04] rounded px-3 py-1.5 bg-card/40">
+              <span className="text-slate-500 text-[10px] font-mono uppercase">ZONA:</span>
+              <select
+                value={regionId || ""}
+                onChange={handleRegionChange}
+                className="bg-transparent text-white font-medium text-xs focus:outline-none cursor-pointer pr-1 border-none font-mono"
+              >
+                {regions.map((reg) => (
+                  <option key={reg.id} value={reg.id} className="bg-[#020305] text-white">
+                    {reg.name.toUpperCase()}
+                  </option>
+                ))}
+              </select>
             </div>
-            {region.main_crops && (
-              <div className="flex items-center gap-1">
-                <Sprout className="w-3.5 h-3.5 text-primary" />
-                <span>Cultivos:</span>
-                <span className="text-slate-300 font-medium">{region.main_crops}</span>
-              </div>
-            )}
-            {region.area_hectares && (
+          )}
+        </div>
+
+        {/* Ficha descriptiva */}
+        {region?.description && (
+          <div className="bg-card border border-white/[0.03] p-6 rounded shadow-xl space-y-6">
+            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed font-light">
+              {region.description}
+            </p>
+            <div className="flex flex-wrap gap-x-8 gap-y-2 text-[10px] font-mono text-slate-500 border-t border-white/[0.03] pt-4">
               <div>
-                <span>Área Monitoreada:</span>
-                <span className="text-slate-300 font-medium ml-1">
-                  {region.area_hectares.toLocaleString()} ha
-                </span>
+                <span>ID:</span>
+                <span className="text-slate-300 ml-1">#SCZ-00{region.id}</span>
               </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Error state */}
-      {errorPredictions && (
-        <div className="bg-card border border-red-500/20 p-8 rounded-2xl text-center">
-          <ShieldAlert className="text-red-400 w-10 h-10 mx-auto mb-3" />
-          <h4 className="text-white text-md font-bold">Error al Cargar Datos</h4>
-          <p className="text-slate-400 text-sm mt-2">
-            No se pudieron obtener las predicciones para esta región. Verifique la conexión con el backend.
-          </p>
-        </div>
-      )}
-
-      {/* Full-width Prediction Chart */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-primary" />
-          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500">
-            Proyección Climática Completa
-          </span>
-        </div>
-        {loadingPredictions || loadingTimeline ? (
-          <SectionSkeleton height="h-[420px]" />
-        ) : (
-          <PredictionChart predictions={predictionData?.predictions || []} />
-        )}
-      </div>
-
-      {/* Timeline summary cards */}
-      {timelineData && timelineData.timeline.length > 0 && (
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Calendar className="w-4 h-4 text-accent" />
-            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500">
-              Línea Temporal de Anomalías
-            </span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {timelineData.timeline.map((entry, idx) => {
-              const isDrought = entry.anomaly_type === "SEQUIA";
-              const isFlood = entry.anomaly_type === "INUNDACION";
-              const borderColor = isDrought
-                ? "border-drought/30 hover:border-drought/60"
-                : isFlood
-                ? "border-flood/30 hover:border-flood/60"
-                : "border-primary/20 hover:border-primary/40";
-
-              return (
-                <div
-                  key={idx}
-                  className={`bg-card border ${borderColor} rounded-xl p-3 transition-all`}
-                >
-                  <span className="text-[10px] text-slate-500 font-mono block">
-                    {new Date(entry.target_date).toLocaleDateString("es-BO", {
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                  <div className="flex items-center gap-1.5 mt-1">
-                    {isDrought ? (
-                      <Sun className="w-3.5 h-3.5 text-drought" />
-                    ) : isFlood ? (
-                      <CloudRain className="w-3.5 h-3.5 text-flood" />
-                    ) : (
-                      <CheckCircle className="w-3.5 h-3.5 text-primary" />
-                    )}
-                    <span className={`text-xs font-bold ${
-                      isDrought ? "text-drought" : isFlood ? "text-flood" : "text-primary"
-                    }`}>
-                      {isDrought ? "Sequía" : isFlood ? "Inundación" : "Normal"}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="text-[10px] text-slate-500">Sev.</span>
-                    <span className={`text-xs font-black ${
-                      entry.severity_level >= 4 ? "text-red-400" : entry.severity_level >= 3 ? "text-amber-400" : "text-slate-300"
-                    }`}>
-                      {entry.severity_level}/5
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-slate-500">Conf.</span>
-                    <span className="text-[10px] text-primary font-bold">
-                      {Math.round(entry.confidence_score * 100)}%
-                    </span>
-                  </div>
+              {region.main_crops && (
+                <div>
+                  <span>CULTIVOS:</span>
+                  <span className="text-slate-300 ml-1 uppercase">{region.main_crops}</span>
                 </div>
-              );
-            })}
+              )}
+              {region.area_hectares && (
+                <div>
+                  <span>ÁREA:</span>
+                  <span className="text-slate-300 ml-1">
+                    {region.area_hectares.toLocaleString()} HA
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Risk Assessment */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <ShieldAlert className="w-4 h-4 text-amber-400" />
-          <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500">
-            Evaluación de Riesgo Integral
-          </span>
-        </div>
-        {loadingRisk ? (
-          <SectionSkeleton height="h-72" />
-        ) : riskData ? (
-          <RiskAssessmentPanel riskData={riskData} />
-        ) : (
-          <div className="bg-card border border-card-border p-8 rounded-2xl text-center">
-            <p className="text-slate-500 text-sm">
-              No hay datos de evaluación de riesgo disponibles para esta región.
+        {/* Estado de error */}
+        {errorPredictions && (
+          <div className="border border-red-500/10 bg-red-500/[0.02] p-8 rounded text-center">
+            <h4 className="text-red-400 text-xs font-mono uppercase tracking-wider">Error de Conexión</h4>
+            <p className="text-slate-500 text-[11px] mt-2 max-w-sm mx-auto">
+              No se pudieron obtener las proyecciones climáticas para esta región. Verifique la conexión con el servidor.
             </p>
           </div>
         )}
-      </div>
 
-      {/* Vertex AI Details Grid */}
-      {predictionData && predictionData.predictions.length > 0 && (
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500">
-              Telemetría de Vertex AI por Predicción
+        {/* Gráfico de Proyección */}
+        <div className="space-y-3">
+          <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block">
+            [ Evolución Temporal del Alerta ]
+          </span>
+          {loadingPredictions || loadingTimeline ? (
+            <SectionSkeleton height="h-[380px]" />
+          ) : (
+            <PredictionChart predictions={predictionData?.predictions || []} />
+          )}
+        </div>
+
+        {/* Línea temporal de 12 meses */}
+        {timelineData && timelineData.timeline.length > 0 && (
+          <div className="space-y-3">
+            <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block">
+              [ Proyecciones Mensuales a 12 Meses ]
             </span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              {timelineData.timeline.map((entry, idx) => {
+                const isDrought = entry.anomaly_type === "SEQUIA";
+                const isFlood = entry.anomaly_type === "INUNDACION";
+                const dotColor = isDrought
+                  ? "bg-drought"
+                  : isFlood
+                  ? "bg-flood"
+                  : "bg-primary";
+
+                const label = isDrought ? "Sequía" : isFlood ? "Inundación" : "Estable";
+
+                return (
+                  <div
+                    key={idx}
+                    className="bg-card border border-white/[0.03] rounded p-3.5 space-y-3 transition-colors hover:border-white/[0.06]"
+                  >
+                    <span className="text-[9px] text-slate-500 font-mono block">
+                      {new Date(entry.target_date).toLocaleDateString("es-BO", {
+                        month: "short",
+                        year: "numeric",
+                      }).toUpperCase()}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+                      <span className="text-[10px] text-slate-300 font-medium">
+                        {label}
+                      </span>
+                    </div>
+                    <div className="border-t border-white/[0.03] pt-2 space-y-1 text-[9px] font-mono text-slate-500">
+                      <div className="flex justify-between">
+                        <span>RIESGO:</span>
+                        <span className="text-slate-300">{entry.severity_level}/5</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>CONFIANZA:</span>
+                        <span className="text-slate-300">{Math.round(entry.confidence_score * 100)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {predictionData.predictions.map((prediction) => (
-              <VertexDetails key={prediction.id} prediction={prediction} />
-            ))}
+        )}
+
+        {/* Paneles de mitigación y calibración */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="space-y-3">
+            <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block">
+              [ Medidas de Mitigación Recomendadas ]
+            </span>
+            {loadingRisk ? (
+              <SectionSkeleton height="h-72" />
+            ) : riskData ? (
+              <RiskAssessmentPanel riskData={riskData} />
+            ) : (
+              <div className="bg-card border border-white/[0.03] p-8 rounded text-center">
+                <p className="text-slate-500 text-xs font-mono">
+                  Evaluación de riesgo no disponible para esta región.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block">
+              [ Calibración del Modelo Predictivo ]
+            </span>
+            {predictionData && predictionData.predictions.length > 0 ? (
+              <VertexDetails prediction={predictionData.predictions[0]} />
+            ) : (
+              <SectionSkeleton height="h-72" />
+            )}
           </div>
         </div>
-      )}
+      </main>
     </div>
   );
 }
