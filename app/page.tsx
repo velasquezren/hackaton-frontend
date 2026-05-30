@@ -17,10 +17,10 @@ export default function LandingPage() {
     <div className="h-screen max-h-screen overflow-hidden bg-background text-foreground flex flex-col justify-between font-sans antialiased relative">
       {/* ─── ANIMACIÓN DE FONDO: RADAR SATELITAL (Sentinel-2 Scanner) ─── */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-0 select-none">
-        <div className="absolute w-[600px] h-[600px] bg-primary/[0.01] rounded-full blur-[140px]" />
+        <div className="absolute w-[900px] h-[900px] bg-primary/[0.01] rounded-full blur-[180px]" />
         
         {/* Marca de agua gigante y ultra tenue estilo ingeniería */}
-        <div className="absolute text-[7.5vw] font-mono font-bold tracking-[0.22em] text-white/[0.007] uppercase whitespace-nowrap select-none">
+        <div className="absolute text-[8vw] font-mono font-bold tracking-[0.25em] text-white/[0.007] uppercase whitespace-nowrap select-none">
           BUILD WITH AI 2026
         </div>
         
@@ -41,8 +41,8 @@ export default function LandingPage() {
             }}
             className="absolute rounded-full border border-primary/[0.08]"
             style={{
-              width: "400px",
-              height: "400px",
+              width: "650px",
+              height: "650px",
             }}
           />
         ))}
@@ -90,12 +90,12 @@ export default function LandingPage() {
       </nav>
 
       {/* ─── HÉROE SIMPLIFICADO Y CENTRADO ─── */}
-      <main className="flex-1 flex flex-col items-center justify-center max-w-3xl lg:max-w-5xl mx-auto px-6 w-full text-center z-10 space-y-6 md:space-y-8 lg:space-y-10">
+      <main className="flex-1 flex flex-col items-center justify-center max-w-4xl lg:max-w-6xl mx-auto px-6 w-full text-center z-10 space-y-8 md:space-y-10 lg:space-y-12">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-wide select-none bg-white/[0.01] border border-white/[0.02] px-6 lg:px-8 py-2.5 lg:py-3.5 rounded-full backdrop-blur-md"
+          className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide select-none bg-white/[0.01] border border-white/[0.02] px-8 lg:px-10 py-3 lg:py-4 rounded-full backdrop-blur-md"
         >
           {/* Santa Cruz en degradé verde y blanco (colores de la bandera) */}
           <span className="bg-gradient-to-r from-emerald-500 via-emerald-100 to-white bg-clip-text text-transparent font-extrabold">
@@ -113,7 +113,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-none tracking-tight"
+          className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-light text-white leading-none tracking-tight"
         >
           Prevención Climática.
         </motion.h1>
@@ -122,7 +122,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-xs sm:text-base lg:text-lg text-slate-400 font-light leading-relaxed max-w-md lg:max-w-2xl mx-auto"
+          className="text-xs sm:text-lg lg:text-xl text-slate-400 font-light leading-relaxed max-w-md lg:max-w-3xl mx-auto"
         >
           Proyecciones a 12 meses de sequías e inundaciones para el sector agropecuario de Santa Cruz basadas en datos de Sentinel-2.
         </motion.p>
@@ -131,7 +131,7 @@ export default function LandingPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2 lg:pt-4 w-full"
+          className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4 lg:pt-8 w-full"
         >
           <motion.div
             whileHover={{ scale: 1.025, translateY: -1 }}
@@ -141,7 +141,7 @@ export default function LandingPage() {
             <Link
               href="/mapa"
               prefetch={true}
-              className="bg-primary hover:bg-emerald-600 text-slate-950 font-bold px-6 lg:px-8 py-3 lg:py-4 rounded text-xs lg:text-sm tracking-wider uppercase transition-all w-full block text-center"
+              className="bg-primary hover:bg-emerald-600 text-slate-950 font-bold px-8 lg:px-10 py-4 lg:py-5 rounded text-xs lg:text-sm tracking-wider uppercase transition-all w-full block text-center"
             >
               Abrir Visualizador
             </Link>
@@ -156,7 +156,7 @@ export default function LandingPage() {
               href="https://t.me/CampoIA_bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="border border-white/[0.08] hover:bg-white/[0.02] text-white font-medium px-6 lg:px-8 py-3 lg:py-4 rounded text-xs lg:text-sm tracking-wider uppercase transition-all w-full block text-center"
+              className="border border-white/[0.08] hover:bg-white/[0.02] text-white font-medium px-8 lg:px-10 py-4 lg:py-5 rounded text-xs lg:text-sm tracking-wider uppercase transition-all w-full block text-center"
             >
               Canal de Alertas
             </a>
@@ -165,8 +165,8 @@ export default function LandingPage() {
       </main>
 
       {/* ─── MÉTRICAS GENERALES ─── */}
-      <section className="border-t border-white/[0.01] bg-card/[0.05] py-6 flex-shrink-0 z-10">
-        <div className="max-w-4xl mx-auto px-6">
+      <section className="border-t border-white/[0.01] bg-card/[0.05] py-8 lg:py-12 flex-shrink-0 z-10">
+        <div className="max-w-5xl lg:max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-white/[0.03]">
             {[
               { label: "Regiones", value: summary?.total_regions || 5, suffix: "" },
@@ -175,10 +175,10 @@ export default function LandingPage() {
               { label: "Cobertura", value: 12.5, suffix: "M ha" },
             ].map((stat, i) => (
               <div key={i} className="text-center pt-3 md:pt-0 first:pt-0 flex flex-col justify-center">
-                <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block mb-1">
+                <span className="text-[10px] sm:text-xs font-mono tracking-widest text-slate-500 uppercase block mb-1.5">
                   {stat.label}
                 </span>
-                <p className="text-lg font-light text-white font-mono leading-none">
+                <p className="text-xl sm:text-2xl lg:text-3xl font-light text-white font-mono leading-none">
                   {stat.label === "Cobertura" ? (
                     <span>{stat.value}{stat.suffix}</span>
                   ) : (
