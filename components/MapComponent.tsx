@@ -63,12 +63,12 @@ function MapController({ selectedRegionCoords, resetTrigger }: MapControllerProp
     }
 
     if (selectedRegionCoords) {
-      map.flyTo(selectedRegionCoords, 8.5, {
+      map.flyTo(selectedRegionCoords, 10, {
         animate: true,
         duration: 1.2,
       });
     } else {
-      map.flyTo([-17.78, -63.18], 6.5, {
+      map.flyTo([-17.78, -63.18], 7.5, {
         animate: true,
         duration: 1.0,
       });
@@ -179,45 +179,45 @@ export default function MapComponent() {
       {/* ─── PANEL LATERAL DESLIZANTE/RETRAÍBLE ─── */}
       <div
         className={`
-          absolute top-4 bottom-4 left-4 z-[1000] w-76 max-w-[calc(100vw-2rem)]
+          absolute top-6 bottom-6 left-6 z-[1000] w-[350px] md:w-[420px] max-w-[calc(100vw-3rem)]
           bg-card/95 backdrop-blur-xl border border-white/[0.03] rounded-lg shadow-2xl
-          flex flex-col p-5 transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]
-          ${isSidebarOpen ? "translate-x-0" : "-translate-x-[calc(100%+16px)]"}
+          flex flex-col p-6 transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-[calc(100%+24px)]"}
         `}
       >
         {/* Botón pestaña deslizante acoplado al borde derecho */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="absolute -right-8 top-1/2 -translate-y-1/2 w-8 h-28 bg-card/95 border border-l-0 border-white/[0.03] rounded-r flex items-center justify-center text-slate-500 hover:text-white transition-colors cursor-pointer shadow-lg select-none"
+          className="absolute -right-10 top-1/2 -translate-y-1/2 w-10 h-36 bg-card/95 border border-l-0 border-white/[0.03] rounded-r flex items-center justify-center text-slate-500 hover:text-white transition-colors cursor-pointer shadow-lg select-none"
           title={isSidebarOpen ? "Ocultar panel" : "Mostrar panel"}
         >
-          <span className="text-[7.5px] font-mono tracking-[0.2em] uppercase [writing-mode:vertical-lr] text-slate-400 hover:text-white transition-colors">
+          <span className="text-[9px] font-mono tracking-[0.2em] uppercase [writing-mode:vertical-lr] text-slate-400 hover:text-white transition-colors">
             {isSidebarOpen ? "CERRAR" : "REGIONES"}
           </span>
         </button>
 
         {/* Cabecera */}
         <div className="flex justify-between items-center mb-6">
-          <span className="text-[9px] font-mono tracking-[0.25em] text-slate-500 uppercase">
+          <span className="text-[11px] font-mono tracking-[0.25em] text-slate-500 uppercase">
             REGIONES
           </span>
         </div>
 
         {/* Buscador minimalista sin fondo */}
-        <div className="relative mb-5 border-b border-white/[0.05]">
+        <div className="relative mb-6 border-b border-white/[0.05] pb-1">
           <input
             type="text"
-            placeholder="Buscar..."
+            placeholder="Buscar región o cultivo..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none transition-all"
+            className="w-full bg-transparent py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none transition-all"
           />
         </div>
 
         {/* Resumen simple */}
-        <div className="text-[10px] font-mono tracking-wider mb-5 flex items-center gap-2 text-slate-400">
+        <div className="text-xs font-mono tracking-wider mb-6 flex items-center gap-2.5 text-slate-400">
           <span
-            className={`w-1.5 h-1.5 rounded-full ${
+            className={`w-2 h-2 rounded-full ${
               regionsInAlert > 0 ? "bg-amber-500 animate-pulse" : "bg-primary"
             }`}
           />
@@ -229,9 +229,9 @@ export default function MapComponent() {
         </div>
 
         {/* Lista de regiones */}
-        <div className="flex-1 space-y-1 overflow-y-auto pr-1">
+        <div className="flex-1 space-y-2 overflow-y-auto pr-1">
           {filteredRegions.length === 0 ? (
-            <p className="text-slate-600 text-[10px] font-mono text-center py-4">Sin resultados</p>
+            <p className="text-slate-600 text-xs font-mono text-center py-4">Sin resultados</p>
           ) : (
             filteredRegions.map((r) => {
               const risk = humanRisk(r.severity, r.anomaly);
@@ -247,15 +247,15 @@ export default function MapComponent() {
                 <button
                   key={r.id}
                   onClick={() => handleFlyToRegion(r.id)}
-                  className={`w-full text-left py-2 px-3 rounded flex items-center justify-between border border-transparent hover:border-white/[0.02] hover:bg-white/[0.01] transition-all duration-300 hover:translate-x-1 cursor-pointer ${
+                  className={`w-full text-left py-3 px-4 rounded flex items-center justify-between border border-transparent hover:border-white/[0.02] hover:bg-white/[0.01] transition-all duration-300 hover:translate-x-1 cursor-pointer ${
                     isSelected ? "bg-white/[0.02] border-white/[0.04]" : ""
                   }`}
                 >
-                  <div className="space-y-0.5">
-                    <p className="text-xs text-slate-300 font-medium">{r.name}</p>
-                    <p className="text-[10px] text-slate-500 font-light">{risk.label}</p>
+                  <div className="space-y-1">
+                    <p className="text-sm text-slate-300 font-medium">{r.name}</p>
+                    <p className="text-xs text-slate-500 font-light">{risk.label}</p>
                   </div>
-                  <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+                  <span className={`w-2 h-2 rounded-full ${dotColor}`} />
                 </button>
               );
             })
@@ -265,18 +265,18 @@ export default function MapComponent() {
         {/* Botón restaurar */}
         <button
           onClick={handleResetMap}
-          className="mt-6 w-full border border-white/[0.05] hover:bg-white/[0.01] text-slate-500 hover:text-slate-300 py-2 rounded text-[9px] font-mono tracking-widest uppercase transition-all cursor-pointer"
+          className="mt-6 w-full border border-white/[0.05] hover:bg-white/[0.01] text-slate-500 hover:text-slate-300 py-3 rounded text-[11px] font-mono tracking-widest uppercase transition-all cursor-pointer"
         >
           [ Restablecer Vista ]
         </button>
       </div>
 
       {/* ─── CONTROLES DE CAPA / ESTILO ─── */}
-      <div className="absolute top-4 right-4 z-[1000] flex gap-2">
-        <div className="flex bg-card/90 backdrop-blur-md border border-white/[0.03] p-1 rounded">
+      <div className="absolute top-6 right-6 z-[1000] flex gap-3">
+        <div className="flex bg-card/90 backdrop-blur-md border border-white/[0.03] p-1.5 rounded">
           <button
             onClick={() => setMapStyle("dark")}
-            className={`px-3 py-1.5 rounded text-[9px] font-mono tracking-wider uppercase transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded text-[11px] font-mono tracking-wider uppercase transition-all cursor-pointer ${
               mapStyle === "dark" ? "bg-white text-black font-semibold" : "text-slate-500 hover:text-white"
             }`}
           >
@@ -284,7 +284,7 @@ export default function MapComponent() {
           </button>
           <button
             onClick={() => setMapStyle("satellite")}
-            className={`px-3 py-1.5 rounded text-[9px] font-mono tracking-wider uppercase transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded text-[11px] font-mono tracking-wider uppercase transition-all cursor-pointer ${
               mapStyle === "satellite" ? "bg-white text-black font-semibold" : "text-slate-500 hover:text-white"
             }`}
           >
@@ -294,33 +294,33 @@ export default function MapComponent() {
 
         <button
           onClick={toggleFullscreen}
-          className="bg-card/90 hover:bg-card border border-white/[0.03] px-3.5 py-2 rounded text-slate-400 hover:text-white text-[9px] font-mono tracking-wider uppercase transition-all cursor-pointer flex items-center gap-1.5"
+          className="bg-card/90 hover:bg-card border border-white/[0.03] px-4.5 py-2.5 rounded text-slate-400 hover:text-white text-[11px] font-mono tracking-wider uppercase transition-all cursor-pointer flex items-center gap-1.5"
         >
           {isFullscreen ? (
-            <Minimize2 className="w-3.5 h-3.5" />
+            <Minimize2 className="w-4 h-4" />
           ) : (
-            <Maximize2 className="w-3.5 h-3.5" />
+            <Maximize2 className="w-4 h-4" />
           )}
           <span>Pantalla</span>
         </button>
       </div>
 
       {/* ─── LEYENDA FLOTANTE ─── */}
-      <div className="absolute bottom-4 right-4 bg-card/90 backdrop-blur-md border border-white/[0.03] p-4 rounded z-[1000] min-w-[150px] hidden sm:block">
-        <span className="text-slate-500 text-[9px] font-mono tracking-widest uppercase block mb-3 border-b border-white/[0.04] pb-1">
+      <div className="absolute bottom-6 right-6 bg-card/95 backdrop-blur-xl border border-white/[0.03] p-5 rounded z-[1000] min-w-[180px] hidden sm:block">
+        <span className="text-slate-500 text-[11px] font-mono tracking-widest uppercase block mb-3.5 border-b border-white/[0.04] pb-1">
           Indicadores
         </span>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-[10px] font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#f97316]" />
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-2.5 text-xs font-mono">
+            <span className="w-2 h-2 rounded-full bg-[#f97316]" />
             <span className="text-slate-400">Sequía</span>
           </div>
-          <div className="flex items-center gap-2 text-[10px] font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]" />
+          <div className="flex items-center gap-2.5 text-xs font-mono">
+            <span className="w-2 h-2 rounded-full bg-[#3b82f6]" />
             <span className="text-slate-400">Inundación</span>
           </div>
-          <div className="flex items-center gap-2 text-[10px] font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
+          <div className="flex items-center gap-2.5 text-xs font-mono">
+            <span className="w-2 h-2 rounded-full bg-[#10b981]" />
             <span className="text-slate-400">Estable</span>
           </div>
         </div>
@@ -330,7 +330,7 @@ export default function MapComponent() {
       <div className="flex-1 h-full w-full relative z-10">
         <MapContainer
           center={[-17.78, -63.18]}
-          zoom={6.5}
+          zoom={7.5}
           scrollWheelZoom={true}
           className="absolute inset-0 w-full h-full"
           zoomControl={false}

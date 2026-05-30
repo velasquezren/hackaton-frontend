@@ -62,10 +62,10 @@ export default function LandingPage() {
       </div>
 
       {/* ─── NAVEGACIÓN COMPACTA ─── */}
-      <nav className="w-full bg-background/20 backdrop-blur-xl border-b border-white/[0.01] h-16 flex-shrink-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 h-full flex items-center justify-between">
+      <nav className="w-full bg-background/20 backdrop-blur-xl border-b border-white/[0.01] h-20 flex-shrink-0 z-50">
+        <div className="max-w-[90vw] mx-auto px-6 h-full flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-white text-xs font-light uppercase tracking-[0.25em]">
+            <span className="text-white text-sm font-light uppercase tracking-[0.25em]">
               AgroClima
             </span>
           </div>
@@ -74,14 +74,14 @@ export default function LandingPage() {
               href="https://t.me/CampoIA_bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[10px] uppercase font-mono tracking-widest text-slate-400 hover:text-white transition-colors"
+              className="text-[11px] uppercase font-mono tracking-widest text-slate-400 hover:text-white transition-colors"
             >
               Alertas Telegram
             </a>
             <Link
               href="/mapa"
               prefetch={true}
-              className="bg-white text-black font-semibold text-xs px-4 py-2 rounded hover:bg-neutral-200 transition-colors"
+              className="bg-white text-black font-semibold text-sm px-5 py-2.5 rounded hover:bg-neutral-200 transition-colors"
             >
               Mapa en Vivo
             </Link>
@@ -90,12 +90,12 @@ export default function LandingPage() {
       </nav>
 
       {/* ─── HÉROE SIMPLIFICADO Y CENTRADO ─── */}
-      <main className="flex-1 flex flex-col items-center justify-center max-w-4xl lg:max-w-6xl mx-auto px-6 w-full text-center z-10 space-y-8 md:space-y-10 lg:space-y-12">
+      <main className="flex-1 flex flex-col items-center justify-center max-w-[90vw] mx-auto px-6 w-full text-center z-10 space-y-10 md:space-y-12 lg:space-y-16">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide select-none bg-white/[0.01] border border-white/[0.02] px-8 lg:px-10 py-3 lg:py-4 rounded-full backdrop-blur-md"
+          className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-wide select-none bg-white/[0.01] border border-white/[0.02] px-8 lg:px-12 py-3 lg:py-5 rounded-full backdrop-blur-md"
         >
           {/* Santa Cruz en degradé verde y blanco (colores de la bandera) */}
           <span className="bg-gradient-to-r from-emerald-500 via-emerald-100 to-white bg-clip-text text-transparent font-extrabold">
@@ -113,7 +113,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-light text-white leading-none tracking-tight"
+          className="text-6xl sm:text-8xl lg:text-[110px] xl:text-[140px] font-light text-white leading-none tracking-tight"
         >
           Prevención Climática.
         </motion.h1>
@@ -122,7 +122,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-xs sm:text-lg lg:text-xl text-slate-400 font-light leading-relaxed max-w-md lg:max-w-3xl mx-auto"
+          className="text-sm sm:text-xl lg:text-2xl text-slate-400 font-light leading-relaxed max-w-4xl mx-auto"
         >
           Proyecciones a 12 meses de sequías e inundaciones para el sector agropecuario de Santa Cruz basadas en datos de Sentinel-2.
         </motion.p>
@@ -131,7 +131,7 @@ export default function LandingPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4 lg:pt-8 w-full"
+          className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6 lg:pt-10 w-full"
         >
           <motion.div
             whileHover={{ scale: 1.025, translateY: -1 }}
@@ -141,7 +141,7 @@ export default function LandingPage() {
             <Link
               href="/mapa"
               prefetch={true}
-              className="bg-primary hover:bg-emerald-600 text-slate-950 font-bold px-8 lg:px-10 py-4 lg:py-5 rounded text-xs lg:text-sm tracking-wider uppercase transition-all w-full block text-center"
+              className="bg-primary hover:bg-emerald-600 text-slate-950 font-bold px-10 lg:px-14 py-5 lg:py-6 rounded text-xs lg:text-base tracking-wider uppercase transition-all w-full block text-center"
             >
               Abrir Visualizador
             </Link>
@@ -156,7 +156,7 @@ export default function LandingPage() {
               href="https://t.me/CampoIA_bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="border border-white/[0.08] hover:bg-white/[0.02] text-white font-medium px-8 lg:px-10 py-4 lg:py-5 rounded text-xs lg:text-sm tracking-wider uppercase transition-all w-full block text-center"
+              className="border border-white/[0.08] hover:bg-white/[0.02] text-white font-medium px-10 lg:px-14 py-5 lg:py-6 rounded text-xs lg:text-base tracking-wider uppercase transition-all w-full block text-center"
             >
               Canal de Alertas
             </a>
@@ -165,8 +165,8 @@ export default function LandingPage() {
       </main>
 
       {/* ─── MÉTRICAS GENERALES ─── */}
-      <section className="border-t border-white/[0.01] bg-card/[0.05] py-8 lg:py-12 flex-shrink-0 z-10">
-        <div className="max-w-5xl lg:max-w-7xl mx-auto px-6">
+      <section className="border-t border-white/[0.01] bg-card/[0.05] py-10 lg:py-16 flex-shrink-0 z-10">
+        <div className="max-w-[90vw] mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-white/[0.03]">
             {[
               { label: "Regiones", value: summary?.total_regions || 5, suffix: "" },
@@ -175,10 +175,10 @@ export default function LandingPage() {
               { label: "Cobertura", value: 12.5, suffix: "M ha" },
             ].map((stat, i) => (
               <div key={i} className="text-center pt-3 md:pt-0 first:pt-0 flex flex-col justify-center">
-                <span className="text-[10px] sm:text-xs font-mono tracking-widest text-slate-500 uppercase block mb-1.5">
+                <span className="text-xs sm:text-sm font-mono tracking-widest text-slate-500 uppercase block mb-2">
                   {stat.label}
                 </span>
-                <p className="text-xl sm:text-2xl lg:text-3xl font-light text-white font-mono leading-none">
+                <p className="text-2xl sm:text-3xl lg:text-4xl font-light text-white font-mono leading-none">
                   {stat.label === "Cobertura" ? (
                     <span>{stat.value}{stat.suffix}</span>
                   ) : (
@@ -192,8 +192,8 @@ export default function LandingPage() {
       </section>
 
       {/* ─── PIE DE PÁGINA ─── */}
-      <footer className="border-t border-white/[0.01] py-4 px-6 flex-shrink-0 z-10">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[9px] font-mono text-slate-600">
+      <footer className="border-t border-white/[0.01] py-6 px-6 flex-shrink-0 z-10">
+        <div className="max-w-[90vw] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] font-mono text-slate-600">
           <span>AGROCLIMA · 2026</span>
           <span>MONITOREO CLIMÁTICO DE SANTA CRUZ</span>
         </div>

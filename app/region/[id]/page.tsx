@@ -88,45 +88,45 @@ export default function RegionDetailPage() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
       {/* ─── CABECERA ─── */}
-      <header className="h-16 border-b border-white/[0.02] bg-background sticky top-0 z-40 mb-8 flex items-center justify-between px-6">
+      <header className="h-20 border-b border-white/[0.02] bg-background sticky top-0 z-40 mb-12 flex items-center justify-between px-10">
         <Link
           href="/mapa"
           prefetch={true}
-          className="group flex items-center gap-1.5 text-slate-500 hover:text-white transition-colors text-[10px] font-mono tracking-wider uppercase"
+          className="group flex items-center gap-2 text-slate-500 hover:text-white transition-colors text-xs font-mono tracking-wider uppercase"
         >
-          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           <span>Volver al mapa</span>
         </Link>
-        <span className="text-white text-xs font-light uppercase tracking-[0.25em]">
+        <span className="text-white text-sm font-light uppercase tracking-[0.25em]">
           AgroClima
         </span>
       </header>
 
       {/* ─── CONTENEDOR PRINCIPAL ─── */}
-      <main className="max-w-5xl mx-auto px-6 space-y-12">
+      <main className="max-w-[90vw] mx-auto px-6 space-y-16">
         {/* Cabecera del Reporte */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.03] pb-6">
-          <div className="space-y-1">
-            <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.03] pb-8">
+          <div className="space-y-1.5">
+            <span className="text-[11px] font-mono tracking-widest text-slate-500 uppercase block">
               DIAGNÓSTICO REGIONAL
             </span>
             {region ? (
-              <h1 className="text-white text-xl font-light tracking-tight">
+              <h1 className="text-white text-3xl font-light tracking-tight">
                 {region.name}
               </h1>
             ) : (
-              <div className="h-6 w-48 bg-slate-800 rounded animate-pulse" />
+              <div className="h-8 w-64 bg-slate-800 rounded animate-pulse" />
             )}
           </div>
 
           {/* Selector de Zonas */}
           {regions && regions.length > 0 && (
-            <div className="flex items-center gap-2 border border-white/[0.04] rounded px-3 py-1.5 bg-card/40">
-              <span className="text-slate-500 text-[10px] font-mono uppercase">ZONA:</span>
+            <div className="flex items-center gap-3 border border-white/[0.04] rounded px-4 py-2.5 bg-card/40">
+              <span className="text-slate-500 text-xs font-mono uppercase">ZONA:</span>
               <select
                 value={regionId || ""}
                 onChange={handleRegionChange}
-                className="bg-transparent text-white font-medium text-xs focus:outline-none cursor-pointer pr-1 border-none font-mono"
+                className="bg-transparent text-white font-medium text-sm focus:outline-none cursor-pointer pr-1 border-none font-mono"
               >
                 {regions.map((reg) => (
                   <option key={reg.id} value={reg.id} className="bg-[#020305] text-white">
@@ -140,11 +140,11 @@ export default function RegionDetailPage() {
 
         {/* Ficha descriptiva */}
         {region?.description && (
-          <div className="bg-card border border-white/[0.03] p-6 rounded shadow-xl space-y-6">
-            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed font-light">
+          <div className="bg-card border border-white/[0.03] p-8 rounded shadow-xl space-y-8">
+            <p className="text-slate-400 text-sm sm:text-base leading-relaxed font-light">
               {region.description}
             </p>
-            <div className="flex flex-wrap gap-x-8 gap-y-2 text-[10px] font-mono text-slate-500 border-t border-white/[0.03] pt-4">
+            <div className="flex flex-wrap gap-x-10 gap-y-3 text-xs font-mono text-slate-500 border-t border-white/[0.03] pt-6">
               <div>
                 <span>ID:</span>
                 <span className="text-slate-300 ml-1">#SCZ-00{region.id}</span>
@@ -169,21 +169,21 @@ export default function RegionDetailPage() {
 
         {/* Estado de error */}
         {errorPredictions && (
-          <div className="border border-red-500/10 bg-red-500/[0.02] p-8 rounded text-center">
-            <h4 className="text-red-400 text-xs font-mono uppercase tracking-wider">Error de Conexión</h4>
-            <p className="text-slate-500 text-[11px] mt-2 max-w-sm mx-auto">
+          <div className="border border-red-500/10 bg-red-500/[0.02] p-10 rounded text-center">
+            <h4 className="text-red-400 text-sm font-mono uppercase tracking-wider">Error de Conexión</h4>
+            <p className="text-slate-500 text-xs mt-2 max-w-md mx-auto">
               No se pudieron obtener las proyecciones climáticas para esta región. Verifique la conexión con el servidor.
             </p>
           </div>
         )}
 
         {/* Gráfico de Proyección */}
-        <div className="space-y-3">
-          <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block">
+        <div className="space-y-4">
+          <span className="text-[11px] font-mono tracking-widest text-slate-500 uppercase block">
             [ Evolución Temporal del Alerta ]
           </span>
           {loadingPredictions || loadingTimeline ? (
-            <SectionSkeleton height="h-[380px]" />
+            <SectionSkeleton height="h-[420px]" />
           ) : (
             <PredictionChart predictions={predictionData?.predictions || []} />
           )}
@@ -191,11 +191,11 @@ export default function RegionDetailPage() {
 
         {/* Línea temporal de 12 meses */}
         {timelineData && timelineData.timeline.length > 0 && (
-          <div className="space-y-3">
-            <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block">
+          <div className="space-y-4">
+            <span className="text-[11px] font-mono tracking-widest text-slate-500 uppercase block">
               [ Proyecciones Mensuales a 12 Meses ]
             </span>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {timelineData.timeline.map((entry, idx) => {
                 const isDrought = entry.anomaly_type === "SEQUIA";
                 const isFlood = entry.anomaly_type === "INUNDACION";
@@ -210,21 +210,21 @@ export default function RegionDetailPage() {
                 return (
                   <div
                     key={idx}
-                    className="bg-card border border-white/[0.03] rounded p-3.5 space-y-3 transition-colors hover:border-white/[0.06]"
+                    className="bg-card border border-white/[0.03] rounded p-5 space-y-4 transition-colors hover:border-white/[0.06]"
                   >
-                    <span className="text-[9px] text-slate-500 font-mono block">
+                    <span className="text-[10px] text-slate-500 font-mono block">
                       {new Date(entry.target_date).toLocaleDateString("es-BO", {
                         month: "short",
                         year: "numeric",
                       }).toUpperCase()}
                     </span>
-                    <div className="flex items-center gap-1.5">
-                      <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
-                      <span className="text-[10px] text-slate-300 font-medium">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${dotColor}`} />
+                      <span className="text-xs text-slate-300 font-medium">
                         {label}
                       </span>
                     </div>
-                    <div className="border-t border-white/[0.03] pt-2 space-y-1 text-[9px] font-mono text-slate-500">
+                    <div className="border-t border-white/[0.03] pt-3 space-y-1.5 text-[10px] font-mono text-slate-500">
                       <div className="flex justify-between">
                         <span>RIESGO:</span>
                         <span className="text-slate-300">{entry.severity_level}/5</span>
@@ -242,17 +242,17 @@ export default function RegionDetailPage() {
         )}
 
         {/* Paneles de mitigación y calibración */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-3">
-            <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="space-y-4">
+            <span className="text-[11px] font-mono tracking-widest text-slate-500 uppercase block">
               [ Medidas de Mitigación Recomendadas ]
             </span>
             {loadingRisk ? (
-              <SectionSkeleton height="h-72" />
+              <SectionSkeleton height="h-80" />
             ) : riskData ? (
               <RiskAssessmentPanel riskData={riskData} />
             ) : (
-              <div className="bg-card border border-white/[0.03] p-8 rounded text-center">
+              <div className="bg-card border border-white/[0.03] p-10 rounded text-center">
                 <p className="text-slate-500 text-xs font-mono">
                   Evaluación de riesgo no disponible para esta región.
                 </p>
@@ -260,14 +260,14 @@ export default function RegionDetailPage() {
             )}
           </div>
 
-          <div className="space-y-3">
-            <span className="text-[9px] font-mono tracking-widest text-slate-500 uppercase block">
+          <div className="space-y-4">
+            <span className="text-[11px] font-mono tracking-widest text-slate-500 uppercase block">
               [ Calibración del Modelo Predictivo ]
             </span>
             {predictionData && predictionData.predictions.length > 0 ? (
               <VertexDetails prediction={predictionData.predictions[0]} />
             ) : (
-              <SectionSkeleton height="h-72" />
+              <SectionSkeleton height="h-80" />
             )}
           </div>
         </div>
