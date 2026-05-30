@@ -1,30 +1,28 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-/* System Design Tokens - AgriTech Premium Aesthetics */
+/* AgriTech Design Tokens */
 :root {
-  --background: #05080c;
-  --foreground: #f8fafc;
-  
-  --card: #0b111a;
+  --background: #060a10;
+  --foreground: #f1f5f9;
+
+  --card: #0c1220;
   --card-border: rgba(255, 255, 255, 0.06);
-  
+
   --primary: #10b981;
   --primary-glow: rgba(16, 185, 129, 0.12);
-  
+
   --drought: #f97316;
   --drought-glow: rgba(249, 115, 22, 0.12);
-  
+
   --flood: #3b82f6;
   --flood-glow: rgba(59, 130, 246, 0.12);
-  
+
   --accent: #8b5cf6;
-  
-  --font-geist-sans: "Geist Sans", sans-serif;
-  --font-geist-mono: "Geist Mono", monospace;
+
+  --font-inter: "Inter", sans-serif;
 }
 
-/* Tailwind v4 Inline Theme Overrides */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -37,73 +35,49 @@
   --color-flood: var(--flood);
   --color-flood-glow: var(--flood-glow);
   --color-accent: var(--accent);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans);
+  font-family: var(--font-inter);
   overflow-x: hidden;
 }
 
-/* Premium custom scrollbars */
+/* Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #05080c;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #151f2e;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  background: #1e293b;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #23334a;
+  background: #334155;
 }
 
-/* Glassmorphism layouts */
-.glass-panel {
-  background: rgba(11, 17, 26, 0.75);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.glass-card {
-  background: linear-gradient(135deg, rgba(11, 17, 26, 0.7) 0%, rgba(5, 8, 12, 0.9) 100%);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.glass-card:hover {
-  border-color: rgba(16, 185, 129, 0.25);
-  box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.15);
-  transform: translateY(-2px);
-}
-
-/* Premium Map Canvas custom overlays */
+/* Leaflet dark theme */
 .leaflet-container {
   width: 100%;
   height: 100%;
-  background-color: #0b111a !important;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #0c1220 !important;
+  border-radius: 12px;
 }
 
 .leaflet-bar {
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
 }
 
 .leaflet-bar a {
   background-color: #0f172a !important;
   color: #94a3b8 !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-  transition: all 0.2s ease;
 }
 
 .leaflet-bar a:hover {
@@ -112,14 +86,21 @@ body {
 }
 
 .leaflet-popup-content-wrapper {
-  background-color: #0b111a !important;
-  color: #f8fafc !important;
+  background-color: #0c1220 !important;
+  color: #f1f5f9 !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5) !important;
 }
 
 .leaflet-popup-tip {
-  background-color: #0b111a !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background-color: #0c1220 !important;
+}
+
+/* Utility: line clamp */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

@@ -1,22 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import Sidebar from "@/components/Sidebar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "AgriTech | Inteligencia Climática - Santa Cruz",
-  description: "Plataforma de predicción climática severa a 12 meses de anticipación con Google Vertex AI.",
+  title: "AgriTech — Predicción Climática para Santa Cruz",
+  description: "Sistema de predicción de eventos climáticos severos a 12 meses para productores agrícolas de Santa Cruz, Bolivia.",
 };
 
 export default function RootLayout({
@@ -25,33 +20,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="h-full bg-background text-foreground flex overflow-hidden">
+    <html lang="es" className={`${inter.variable} h-full antialiased`}>
+      <body className="h-full bg-background text-foreground flex overflow-hidden font-sans">
         <Providers>
-          {/* --- SIDEBAR LATERAL PREMIUM --- */}
           <Sidebar />
 
-          {/* --- CONTENEDOR CENTRAL DE PÁGINAS --- */}
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Header Superior */}
-            <header className="h-16 border-b border-card-border bg-card/60 backdrop-blur-md flex items-center justify-between px-6 z-10">
-              <h2 className="text-white text-md font-semibold tracking-wide">
-                Cabina de Inteligencia Climática
-              </h2>
-              
-              <div className="flex items-center gap-4">
-                {/* Indicador Temporal */}
-                <div className="text-xs text-slate-400 font-mono hidden sm:block bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full">
-                  Santa Cruz (GMT-4): {new Date().toISOString().split("T")[0]}
-                </div>
-              </div>
+            {/* Header simple */}
+            <header className="h-12 border-b border-card-border bg-card/40 backdrop-blur-sm flex items-center justify-between px-6 z-10">
+              <span className="text-slate-400 text-xs font-medium md:hidden ml-10">AgriTech</span>
+              <span className="text-slate-400 text-xs font-medium hidden md:block">Inteligencia Climática · Santa Cruz</span>
+              <span className="text-[10px] text-slate-500 font-mono bg-slate-900/50 border border-slate-800/50 px-2.5 py-1 rounded-lg hidden sm:block">
+                {new Date().toLocaleDateString("es-BO", { day: "numeric", month: "short", year: "numeric" })}
+              </span>
             </header>
 
-            {/* Inyección de Páginas dinámicas */}
-            <main className="flex-1 overflow-y-auto bg-background p-6">
+            <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6">
               {children}
             </main>
           </div>
