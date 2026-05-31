@@ -90,7 +90,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ─── HÉROE SIMPLIFICADO Y CENTRADO ─── */}
-      <main className="flex-1 flex flex-col items-center justify-start pt-16 md:pt-20 lg:pt-24 max-w-[90vw] mx-auto px-6 w-full text-center z-10 space-y-10 md:space-y-12 lg:space-y-16">
+      <main className="flex-1 flex flex-col items-center justify-center pt-12 pb-20 md:pb-28 max-w-[90vw] mx-auto px-6 w-full text-center z-10 space-y-8 md:space-y-10 lg:space-y-12">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
