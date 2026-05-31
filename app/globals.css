@@ -124,3 +124,9 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Shift Leaflet zoom control below custom layer switcher */
+.leaflet-top.leaflet-right {
+  top: 105px !important;
+  right: 24px !important;
+}

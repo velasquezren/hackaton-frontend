@@ -179,7 +179,7 @@ export default function MapComponent() {
       {/* ─── PANEL LATERAL DESLIZANTE/RETRAÍBLE ─── */}
       <div
         className={`
-          absolute top-6 bottom-6 left-6 z-[1000] w-[350px] md:w-[420px] max-w-[calc(100vw-3rem)]
+          absolute top-6 bottom-6 left-6 z-[1030] w-[350px] md:w-[420px] max-w-[calc(100vw-3rem)]
           bg-card/95 backdrop-blur-xl border border-white/[0.03] rounded-lg shadow-2xl
           flex flex-col p-6 transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-[calc(100%+24px)]"}
@@ -349,7 +349,7 @@ export default function MapComponent() {
           />
 
           {/* Controlador de Zoom */}
-          <ZoomControl position="bottomright" />
+          <ZoomControl position="topright" />
 
           {/* Marcadores y Círculos */}
           {mapRegions.map((region) => {
