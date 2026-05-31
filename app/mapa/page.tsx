@@ -26,23 +26,23 @@ export default function MapaPage() {
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden">
       {/* ─── BARRA SUPERIOR COMPACTA ─── */}
-      <header className="h-14 bg-background border-b border-white/[0.02] flex items-center justify-between px-6 z-50 flex-shrink-0">
-        <div className="flex items-center gap-6">
+      <header className="h-20 bg-background border-b border-white/[0.02] flex items-center justify-between px-8 z-50 flex-shrink-0">
+        <div className="flex items-center gap-8">
           <Link
             href="/"
             prefetch={true}
-            className="group flex items-center gap-1.5 text-slate-500 hover:text-white transition-colors text-[10px] font-mono tracking-wider uppercase"
+            className="group flex items-center gap-2 text-slate-500 hover:text-white transition-colors text-xs font-mono tracking-wider uppercase"
           >
-            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
             <span>Volver</span>
           </Link>
-          <span className="text-white text-xs font-light uppercase tracking-[0.25em] hidden sm:inline">
+          <span className="text-white text-sm font-light uppercase tracking-[0.25em] hidden sm:inline">
             AgroClima
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-[9px] font-mono text-slate-500 uppercase">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+        <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500 uppercase">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <span>En vivo</span>
         </div>
       </header>

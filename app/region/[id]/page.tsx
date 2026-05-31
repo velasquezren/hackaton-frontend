@@ -88,16 +88,16 @@ export default function RegionDetailPage() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
       {/* ─── CABECERA ─── */}
-      <header className="h-20 border-b border-white/[0.02] bg-background sticky top-0 z-40 mb-12 flex items-center justify-between px-10">
+      <header className="h-24 border-b border-white/[0.02] bg-background sticky top-0 z-40 mb-12 flex items-center justify-between px-10">
         <Link
           href="/mapa"
           prefetch={true}
-          className="group flex items-center gap-2 text-slate-500 hover:text-white transition-colors text-xs font-mono tracking-wider uppercase"
+          className="group flex items-center gap-2.5 text-slate-500 hover:text-white transition-colors text-sm font-mono tracking-wider uppercase"
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
           <span>Volver al mapa</span>
         </Link>
-        <span className="text-white text-sm font-light uppercase tracking-[0.25em]">
+        <span className="text-white text-lg font-light uppercase tracking-[0.25em]">
           AgroClima
         </span>
       </header>

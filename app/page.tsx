@@ -62,26 +62,26 @@ export default function LandingPage() {
       </div>
 
       {/* ─── NAVEGACIÓN COMPACTA ─── */}
-      <nav className="w-full bg-background/20 backdrop-blur-xl border-b border-white/[0.01] h-20 flex-shrink-0 z-50">
+      <nav className="w-full bg-background/20 backdrop-blur-xl border-b border-white/[0.01] h-24 flex-shrink-0 z-50">
         <div className="max-w-[90vw] mx-auto px-6 h-full flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-white text-sm font-light uppercase tracking-[0.25em]">
+            <span className="text-white text-lg font-light uppercase tracking-[0.25em]">
               AgroClima
             </span>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-8">
             <a
               href="https://t.me/CampoIA_bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[11px] uppercase font-mono tracking-widest text-slate-400 hover:text-white transition-colors"
+              className="text-xs uppercase font-mono tracking-widest text-slate-400 hover:text-white transition-colors"
             >
               Alertas Telegram
             </a>
             <Link
               href="/mapa"
               prefetch={true}
-              className="bg-white text-black font-semibold text-sm px-5 py-2.5 rounded hover:bg-neutral-200 transition-colors"
+              className="bg-white text-black font-semibold text-sm sm:text-base px-6 py-3 rounded hover:bg-neutral-200 transition-colors"
             >
               Mapa en Vivo
             </Link>
@@ -192,10 +192,10 @@ export default function LandingPage() {
       </section>
 
       {/* ─── PIE DE PÁGINA ─── */}
-      <footer className="border-t border-white/[0.01] py-6 px-6 flex-shrink-0 z-10">
-        <div className="max-w-[90vw] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] font-mono text-slate-600">
+      <footer className="border-t border-white/[0.01] py-10 px-8 flex-shrink-0 z-10">
+        <div className="max-w-[90vw] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm font-mono text-slate-500">
           <span>AGROCLIMA · 2026</span>
-          <span>MONITOREO CLIMÁTICO DE SANTA CRUZ</span>
+          <span className="tracking-widest">MONITOREO CLIMÁTICO DE SANTA CRUZ</span>
         </div>
       </footer>
     </div>
