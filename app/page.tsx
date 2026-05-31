@@ -62,26 +62,26 @@ export default function LandingPage() {
       </div>
 
       {/* ─── NAVEGACIÓN COMPACTA ─── */}
-      <nav className="w-full bg-background/20 backdrop-blur-xl border-b border-white/[0.01] h-24 flex-shrink-0 z-50">
-        <div className="max-w-[90vw] mx-auto px-6 h-full flex items-center justify-between">
+      <nav className="w-full bg-background/20 backdrop-blur-xl border-b border-white/[0.01] h-20 sm:h-24 flex-shrink-0 z-50">
+        <div className="max-w-[90vw] mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-white text-lg font-light uppercase tracking-[0.25em]">
+            <span className="text-white text-sm sm:text-lg font-light uppercase tracking-[0.25em]">
               AgroClima
             </span>
           </div>
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4 sm:gap-8">
             <a
               href="https://t.me/CampoIA_bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs uppercase font-mono tracking-widest text-slate-400 hover:text-white transition-colors"
+              className="hidden sm:inline-block text-xs uppercase font-mono tracking-widest text-slate-400 hover:text-white transition-colors"
             >
               Alertas Telegram
             </a>
             <Link
               href="/mapa"
               prefetch={true}
-              className="bg-white text-black font-semibold text-sm sm:text-base px-6 py-3 rounded hover:bg-neutral-200 transition-colors"
+              className="bg-white text-black font-semibold text-xs sm:text-base px-4 py-2 sm:px-6 sm:py-3 rounded hover:bg-neutral-200 transition-colors"
             >
               Mapa en Vivo
             </Link>
